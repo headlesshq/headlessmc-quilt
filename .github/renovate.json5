@@ -1,0 +1,33 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: ['config:recommended'],
+  enabledManagers: ['gradle', 'gradle-wrapper', 'github-actions', 'git-submodules'],
+  // git-submodules is disabled by default. Renovate follows the `branch` set in .gitmodules.
+  'git-submodules': { enabled: true },
+  packageRules: [
+    {
+      matchManagers: ['gradle'],
+      semanticCommitType: 'fix',
+      semanticCommitScope: 'deps',
+    },
+    {
+      matchManagers: ['gradle-wrapper'],
+      semanticCommitType: 'build',
+      semanticCommitScope: 'deps',
+    },
+    {
+      matchManagers: ['github-actions'],
+      semanticCommitType: 'ci',
+      semanticCommitScope: 'deps',
+    },
+    {
+      // The submodules are temporary until HeadlessMc 3.0.0-RC9 is released.
+      // Use `build(deps)` so that not every HeadlessMc commit causes a plugin release.
+      // Both usually have to move together, so group them into one PR.
+      matchManagers: ['git-submodules'],
+      semanticCommitType: 'build',
+      semanticCommitScope: 'deps',
+      groupName: 'headlessmc submodules',
+    },
+  ],
+}
