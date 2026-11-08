@@ -1,0 +1,16 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "1e2cda48bfb2d5fbd9e2745d4aacc71685562b74",
+  "include-v-in-tag": false,
+  "include-component-in-tag": false,
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "headlessmc-quilt",
+      "extra-files": [
+        "gradle.properties"
+      ],
+      "release-as": "1.0.0"
+    }
+  }
+}
