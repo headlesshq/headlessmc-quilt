@@ -1,10 +1,19 @@
 {
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: ['config:recommended'],
+  extends: [':enableRenovate', ':semanticCommits', 'config:best-practices'],
+  timezone: 'UTC',
+  dependencyDashboard: true,
+  platformCommit: 'enabled',
+  prCreation: 'not-pending',
+  rebaseWhen: 'conflicted',
+  suppressNotifications: ['prIgnoreNotification'],
   enabledManagers: ['gradle', 'gradle-wrapper', 'github-actions', 'git-submodules'],
   // git-submodules is disabled by default. Renovate follows the `branch` set in .gitmodules.
   'git-submodules': { enabled: true },
   packageRules: [
+    { matchUpdateTypes: ['major'], addLabels: ['dependency/major'] },
+    { matchUpdateTypes: ['minor'], addLabels: ['dependency/minor'] },
+    { matchUpdateTypes: ['patch'], addLabels: ['dependency/patch'] },
     {
       matchManagers: ['gradle'],
       semanticCommitType: 'fix',
