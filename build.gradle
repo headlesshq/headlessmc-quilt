@@ -1,12 +1,11 @@
-plugins {
-    // nests the include dependencies into the jar, generates META-INF/headlessmc-plugin.json
-    // and runs the plugin with a HeadlessMc in run/headlessmc,
-    // see https://github.com/headlesshq/headlessmc-gradle-plugin#writing-headlessmc-plugins
-    id 'io.github.headlesshq.hmc-plugin-gradle-plugin'
-}
+import groovy.json.JsonOutput
 
-repositories {
-    mavenCentral()
+import java.security.MessageDigest
+
+plugins {
+    // nests the include dependencies into the jar and generates META-INF/headlessmc-plugin.json,
+    // see https://headlesshq.github.io/headlessmc/plugins/#the-gradle-plugin
+    id 'io.github.headlesshq.hmc-plugin-gradle-plugin'
 }
 
 headlessmc {
@@ -14,44 +13,79 @@ headlessmc {
     includedBuild = 'headlessmc'
 }
 
+repositories {
+    mavenCentral()
+    maven {
+        name = 'quilt'
+        url = 'https://maven.quiltmc.org/repository/release'
+        content {
+            includeGroup 'org.quiltmc'
+        }
+    }
+}
+
 headlessmcPlugin {
-    // The manifest, META-INF/headlessmc-plugin.json, the version is the project version.
-    id = 'example'
-    name = 'Example Plugin'
-    description = 'An example HeadlessMc plugin, adds the hello command.'
-    authors = ['You']
+    id = 'quilt'
+    name = 'Quilt'
+    description = 'Adds the Quilt platform to HeadlessMc: launching Quilt clients and servers and reading quilt.mod.json.'
+    authors = ['HeadlessHQ']
     license = 'MIT'
-    homepage = 'https://github.com/headlesshq/headlessmc-plugin-template'
-    // The HeadlessMc versions this plugin works with, [3.0.0-RC9,4) by default.
-    // headlessmc = '[3.0.0-RC9,4)'
-    // java = 25
+    homepage = 'https://github.com/headlesshq/headlessmc-quilt'
+}
 
-    // Other plugins this plugin needs:
-    // dependency 'other-plugin', '[1.0,2)'
-    // optionalDependency 'another-plugin', '*'
-
-    // The included libraries are compatible with [version, nextMajor) by default, override it like this:
-    // libraryVersions 'com.github.lalyos:jfiglet', '[0.0.8,0.1)'
+configurations {
+    quiltInstaller {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
+    }
 }
 
 dependencies {
-    // Libraries nested into the plugin jar (Jar-in-Jar), together with their transitive dependencies.
-    // Libraries HeadlessMc already contains (see the headlessmc configuration) are never nested,
-    // HeadlessMc always uses its own version of them, e.g. commons-lang3 or commons-text.
-    // If multiple plugins include the same library, HeadlessMc loads the highest version that all of them accept.
-    include 'com.github.lalyos:jfiglet:0.0.9'
+    // downloaded by HeadlessMc at runtime, the build only pins its hash and size in quilt/quilt-installer.json
+    quiltInstaller 'org.quiltmc:quilt-installer:0.15.1'
 
     testImplementation platform('org.junit:junit-bom:5.13.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+// Generates quilt/quilt-installer.json, so HeadlessMc can verify the installer it downloads.
+def generateQuiltInstaller = tasks.register('generateQuiltInstaller') {
+    def installer = configurations.quiltInstaller
+    def artifacts = installer.incoming.artifacts.resolvedArtifacts
+    def output = layout.buildDirectory.dir('generated/resources/quilt')
+    def repository = 'https://maven.quiltmc.org/repository/release'
+    inputs.files(installer)
+    outputs.dir(output)
+    doLast {
+        def artifact = artifacts.get().first()
+        def id = artifact.id.componentIdentifier
+        File file = artifact.file
+        def sha256 = MessageDigest.getInstance('SHA-256').digest(file.bytes).encodeHex().toString()
+        File json = output.get().file('quilt/quilt-installer.json').asFile
+        json.parentFile.mkdirs()
+        json.text = JsonOutput.prettyPrint(JsonOutput.toJson([
+            group     : id.group,
+            name      : id.module,
+            version   : id.version,
+            fileName  : file.name,
+            size      : file.length(),
+            sha256    : sha256,
+            repository: repository,
+        ])) + '\n'
+    }
 }
 
-// ./gradlew hello runs the command of this plugin, with the plugin installed into the HeadlessMc in run/headlessmc
-tasks.register('hello', HeadlessMcExec) {
-    description = 'Runs the hello command of this plugin.'
-    args 'hello', '--banner', 'HeadlessMc'
+sourceSets.main.resources.srcDir(generateQuiltInstaller)
+
+// ./gradlew runQuilt launches a Quilt client with the plugin installed into the HeadlessMc in run/headlessmc
+tasks.register('runQuilt', HeadlessMcRunTask) {
+    description = 'Launches Minecraft with Quilt, ./gradlew headlessmc --args=login first.'
+    minecraftVersion = providers.gradleProperty('minecraftVersion').orElse('1.21.4')
+    platform = 'quilt'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }

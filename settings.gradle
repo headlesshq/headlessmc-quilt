@@ -19,4 +19,4 @@ plugins {
 gradle.startParameter.projectProperties += [mutableJar: 'true', applicationVersion: '3.0.0-RC9-SNAPSHOT']
 includeBuild('deps/headlessmc')
 
-rootProject.name = 'headlessmc-example-plugin'
+rootProject.name = 'headlessmc-quilt'
