@@ -7,7 +7,7 @@
   prCreation: 'not-pending',
   rebaseWhen: 'conflicted',
   suppressNotifications: ['prIgnoreNotification'],
-  enabledManagers: ['gradle', 'gradle-wrapper', 'github-actions', 'git-submodules'],
+  enabledManagers: ['gradle', 'gradle-wrapper', 'github-actions', 'git-submodules', 'devcontainer'],
   // git-submodules is disabled by default. Renovate follows the `branch` set in .gitmodules.
   'git-submodules': { enabled: true },
   packageRules: [
@@ -37,6 +37,11 @@
       semanticCommitType: 'build',
       semanticCommitScope: 'deps',
       groupName: 'headlessmc submodules',
+    },
+    {
+      matchManagers: ['devcontainer'],
+      semanticCommitType: 'build',
+      semanticCommitScope: 'deps',
     },
   ],
 }
