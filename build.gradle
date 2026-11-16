@@ -8,11 +8,6 @@ plugins {
     id 'io.github.headlesshq.headlessmc-dev-plugin'
 }
 
-headlessmc {
-    // compile against, build and run the HeadlessMc in deps/headlessmc, see settings.gradle
-    includedBuild = 'headlessmc'
-}
-
 repositories {
     mavenCentral()
     maven {
