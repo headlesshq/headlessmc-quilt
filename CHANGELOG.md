@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/headlesshq/headlessmc-quilt/compare/1.0.0...1.0.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* support HeadlessMc 3.0.0-RC9 ([#7](https://github.com/headlesshq/headlessmc-quilt/issues/7)) ([e0c6b8e](https://github.com/headlesshq/headlessmc-quilt/commit/e0c6b8ee75913399239cbb2c3ec2cb48c3e5c546))
+
 ## 1.0.0 (2026-11-09)
 
 
