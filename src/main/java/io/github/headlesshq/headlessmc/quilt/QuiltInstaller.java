@@ -2,6 +2,7 @@ package io.github.headlesshq.headlessmc.quilt;
 
 import io.github.headlesshq.headlessmc.exceptions.HeadlessMcException;
 import io.github.headlesshq.headlessmc.exceptions.HeadlessMcIOException;
+import io.github.headlesshq.headlessmc.files.McFiles;
 import io.github.headlesshq.headlessmc.java.launcher.ProcessHandler;
 import io.github.headlesshq.headlessmc.platform.VersionID;
 import io.github.headlesshq.headlessmc.platform.client.AbstractClientInstaller;
@@ -51,9 +52,9 @@ class QuiltInstaller extends AbstractClientInstaller implements ClientInstaller,
     }
 
     @Override
-    protected void installClient(VersionID id, Path mcDir, Version vanilla, TypedMap args) throws HeadlessMcException {
-        install(id, mcDir, args, false, vanilla.requireJavaVersion());
-        deleteEmptyVersionJars(mcDir.resolve("versions"));
+    protected void installClient(VersionID id, McFiles mcFiles, Version vanilla, TypedMap args) throws HeadlessMcException {
+        install(id, mcFiles.getMcDir(), args, false, vanilla.requireJavaVersion());
+        deleteEmptyVersionJars(mcFiles.getVersionsDir());
     }
 
     /**

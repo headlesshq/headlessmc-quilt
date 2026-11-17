@@ -30,13 +30,11 @@
       semanticCommitScope: 'deps',
     },
     {
-      // The submodules are temporary until HeadlessMc 3.0.0-RC9 is released.
-      // Use `build(deps)` so that not every HeadlessMc commit causes a plugin release.
-      // Both usually have to move together, so group them into one PR.
+      // The headlessmc-gradle-plugin submodule is temporary until the plugin is released.
+      // Use `build(deps)` so that not every commit of it causes a plugin release.
       matchManagers: ['git-submodules'],
       semanticCommitType: 'build',
       semanticCommitScope: 'deps',
-      groupName: 'headlessmc submodules',
     },
     {
       matchManagers: ['devcontainer'],
