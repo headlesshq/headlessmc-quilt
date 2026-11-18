@@ -7,9 +7,7 @@
   prCreation: 'not-pending',
   rebaseWhen: 'conflicted',
   suppressNotifications: ['prIgnoreNotification'],
-  enabledManagers: ['gradle', 'gradle-wrapper', 'github-actions', 'git-submodules', 'devcontainer'],
-  // git-submodules is disabled by default. Renovate follows the `branch` set in .gitmodules.
-  'git-submodules': { enabled: true },
+  enabledManagers: ['gradle', 'gradle-wrapper', 'github-actions', 'devcontainer'],
   packageRules: [
     { matchUpdateTypes: ['major'], addLabels: ['dependency/major'] },
     { matchUpdateTypes: ['minor'], addLabels: ['dependency/minor'] },
@@ -27,13 +25,6 @@
     {
       matchManagers: ['github-actions'],
       semanticCommitType: 'ci',
-      semanticCommitScope: 'deps',
-    },
-    {
-      // The headlessmc-gradle-plugin submodule is temporary until the plugin is released.
-      // Use `build(deps)` so that not every commit of it causes a plugin release.
-      matchManagers: ['git-submodules'],
-      semanticCommitType: 'build',
       semanticCommitScope: 'deps',
     },
     {
